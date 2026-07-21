@@ -3,33 +3,55 @@
  */
 class CloudRunClient {
   /**
-   * Obtiene información de un PDF.
+   * Endpoint para obtener información de un PDF.
+   * @private
+   */
+  static getPdfInfoEndpoint() {
+    return "/api/v1/pdf/info";
+  }
+
+  /**
+   * Envía un PDF a Cloud Run y devuelve su información.
    *
-   * @param {Blob} pdfBlob Blob del PDF.
+   * @param {GoogleAppsScript.Base.Blob} pdfBlob
    * @returns {{pages:number}}
    */
-  static getPdfInfo(pdfBlob) {
-    const endpoint = "/api/v1/pdf/info";
 
+  static getPdfInfo(pdfBlob) {
+    if (!pdfBlob) {
+      throw new Error("INVALID_ARGUMENT: pdfBlob is required.");
+    }
+
+    const response = this.post(this.getPdfInfoEndpoint(), pdfBlob.getBytes(), "application/pdf");
+
+    return response.data;
+  }
+
+  /**
+   * Ejecuta una petición POST.
+   *
+   * @private
+   */
+  static post(endpoint, payload, contentType) {
     const options = {
       method: "post",
-      contentType: "application/pdf",
-      payload: pdfBlob.getBytes(),
-
+      contentType,
+      payload,
+      muteHttpExceptions: true,
       headers: {
         "X-API-Key": CONFIG.CLOUD_RUN.API_KEY,
       },
-
-      muteHttpExceptions: true,
     };
 
-    try {
-      const response = UrlFetchApp.fetch(CONFIG.CLOUD_RUN.BASE_URL + endpoint, options);
+    let response;
 
-      return this.handleResponse(response);
+    try {
+      response = UrlFetchApp.fetch(CONFIG.CLOUD_RUN.BASE_URL + endpoint, options);
     } catch (error) {
       throw new Error(`NETWORK_ERROR: ${error.message}`);
     }
+
+    return this.parseResponse(response);
   }
 
   /**
@@ -37,34 +59,32 @@ class CloudRunClient {
    *
    * @private
    */
-  static handleResponse(response) {
+  static parseResponse(response) {
     const status = response.getResponseCode();
 
-    const body = response.getContentText();
-
-    let json = {};
+    let body = {};
 
     try {
-      json = JSON.parse(body);
+      body = JSON.parse(response.getContentText());
     } catch (_) {
-      throw new Error("INVALID_RESPONSE: Response is not valid JSON.");
+      throw new Error("INVALID_RESPONSE: Cloud Run did not return valid JSON.");
     }
 
     switch (status) {
       case 200:
-        return json.data;
+        return body;
 
       case 400:
-        throw new Error(json.error?.message || "INVALID_PDF");
+        throw new Error(body.error?.message || "INVALID_PDF");
 
       case 401:
-        throw new Error("AUTHENTICATION_ERROR");
+        throw new Error(body.error?.message || "AUTHENTICATION_ERROR");
 
       case 413:
-        throw new Error("FILE_TOO_LARGE");
+        throw new Error(body.error?.message || "FILE_TOO_LARGE");
 
       default:
-        throw new Error(`SERVER_ERROR (${status})`);
+        throw new Error(body.error?.message || `SERVER_ERROR (${status})`);
     }
   }
 }
