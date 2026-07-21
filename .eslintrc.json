@@ -1,0 +1,41 @@
+{
+  "env": {
+    "es2022": true
+  },
+  "extends": ["eslint:recommended", "prettier"],
+  "globals": {
+    "Logger": "readonly",
+    "DriveApp": "readonly",
+    "SpreadsheetApp": "readonly",
+    "DocumentApp": "readonly",
+    "UrlFetchApp": "readonly",
+    "Utilities": "readonly",
+    "PropertiesService": "readonly",
+    "ScriptApp": "readonly",
+    "Session": "readonly",
+    "MimeType": "readonly",
+    "HtmlService": "readonly",
+    "ContentService": "readonly",
+    "CacheService": "readonly",
+    "LockService": "readonly",
+    "GmailApp": "readonly",
+    "FormApp": "readonly",
+    "CalendarApp": "readonly",
+    "LanguageApp": "readonly",
+    "Maps": "readonly",
+    "XmlService": "readonly",
+    "Drive": "readonly"
+  },
+  "rules": {
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "no-console": "off",
+    "no-var": "error",
+    "prefer-const": "error",
+    "eqeqeq": ["error", "always"]
+  }
+}
