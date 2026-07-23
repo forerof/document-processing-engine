@@ -14,6 +14,8 @@ class ProcessedFileRecord {
 
     this.sheetSyncStatus = SheetSyncStatus.PENDING;
 
-    this.processedAt = null;
+    this.lastUpdatedAt = null;
+
+    this.pages = null;
   }
 }

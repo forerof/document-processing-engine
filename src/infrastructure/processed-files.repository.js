@@ -52,7 +52,7 @@ class ProcessedFilesRepository {
 
     const records = this.getAll();
 
-    record.processedAt = new Date().toISOString();
+    record.lastUpdatedAt = new Date().toISOString();
 
     records[record.fileId] = record;
 
@@ -100,5 +100,49 @@ class ProcessedFilesRepository {
       this.getStorageKey(),
       JSON.stringify(records)
     );
+  }
+
+  /**
+   * Construye un registro persistente a partir de un PdfFile.
+   *
+   * @param {PdfFile} pdf
+   * @returns {ProcessedFileRecord}
+   */
+  static fromPdfFile(pdf) {
+    const record = new ProcessedFileRecord(pdf.id);
+
+    record.pages = pdf.pages;
+
+    record.pdfProcessingStatus = pdf.pdfProcessingStatus;
+
+    record.pdfProcessingError = pdf.pdfProcessingError;
+
+    record.sheetSyncStatus = pdf.sheetSyncStatus;
+
+    return record;
+  }
+
+  /**
+   * Hidrata un PdfFile con la información persistida.
+   *
+   * @param {PdfFile} pdf
+   * @returns {PdfFile}
+   */
+  static hydrate(pdf) {
+    const record = this.find(pdf.id);
+
+    if (!record) {
+      return pdf;
+    }
+
+    pdf.pages = record.pages;
+
+    pdf.pdfProcessingStatus = record.pdfProcessingStatus;
+
+    pdf.pdfProcessingError = record.pdfProcessingError;
+
+    pdf.sheetSyncStatus = record.sheetSyncStatus;
+
+    return pdf;
   }
 }

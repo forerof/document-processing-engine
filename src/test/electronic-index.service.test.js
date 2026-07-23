@@ -2,43 +2,73 @@
  * ============================================================================
  * ElectronicIndexService Manual Tests
  * ============================================================================
- *
- * Estas pruebas verifican el comportamiento del servicio encargado de
- * orquestar el flujo del Electronic Index Project.
- *
- * Requisitos:
- *  - Configuración inicial ejecutada.
- *  - TEST_FOLDER_ID configurado.
- *  - Cloud Run desplegado (para pruebas futuras).
- * ============================================================================
  */
 
 /**
- * Carpeta utilizada para las pruebas.
+ * Carpeta de pruebas.
  */
 const TEST_FOLDER_ID = "REEMPLAZAR_FOLDER_ID";
 
 /**
- * Verifica que únicamente se devuelvan los documentos pendientes.
- *
- * Casos esperados:
- *  - Documentos nunca procesados.
- *  - Documentos cuyo procesamiento PDF falló.
- *  - Documentos cuya sincronización con Sheets falló.
+ * Lista únicamente los documentos pendientes.
  */
 function testElectronicIndexService_GetPendingFiles() {
   const pendingFiles = ElectronicIndexService.getPendingFiles(TEST_FOLDER_ID);
 
-  Logger.log("==========================================");
-  Logger.log("Documentos pendientes: %s", pendingFiles.length);
-  Logger.log("==========================================");
+  Logger.log("=======================================");
+  Logger.log("Pendientes: %s", pendingFiles.length);
+  Logger.log("=======================================");
 
   pendingFiles.forEach(function (pdf) {
     Logger.log({
       id: pdf.id,
       name: pdf.name,
+      pages: pdf.pages,
       pdfProcessingStatus: pdf.pdfProcessingStatus,
       sheetSyncStatus: pdf.sheetSyncStatus,
     });
   });
+}
+
+/**
+ * Ejecuta la primera etapa completa del pipeline.
+ *
+ * Drive
+ *   ↓
+ * PendingFiles
+ *   ↓
+ * Cloud Run
+ *   ↓
+ * pages
+ *   ↓
+ * ProcessedFilesRepository
+ */
+function testElectronicIndexService_ProcessPendingFiles() {
+  Logger.log("=======================================");
+  Logger.log("Procesando documentos...");
+  Logger.log("=======================================");
+
+  ElectronicIndexService.processPendingFiles(TEST_FOLDER_ID);
+
+  Logger.log("=======================================");
+  Logger.log("Proceso finalizado.");
+  Logger.log("=======================================");
+}
+
+/**
+ * Muestra el contenido actual del repositorio.
+ */
+function testProcessedFilesRepository_ShowAll() {
+  const records = ProcessedFilesRepository.getAll();
+
+  Logger.log(JSON.stringify(records, null, 2));
+}
+
+/**
+ * Reinicia completamente el repositorio.
+ */
+function testProcessedFilesRepository_Clear() {
+  ProcessedFilesRepository.clear();
+
+  Logger.log("Repositorio limpiado.");
 }
