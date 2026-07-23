@@ -7,7 +7,9 @@ class ProcessedFilesRepository {
    * Clave utilizada en Script Properties.
    * @private
    */
-  static STORAGE_KEY = "processedFiles";
+  static getStorageKey() {
+    return "processedFiles";
+  }
 
   /**
    * Devuelve todos los registros.
@@ -17,7 +19,7 @@ class ProcessedFilesRepository {
   static getAll() {
     const properties = PropertiesService.getScriptProperties();
 
-    const json = properties.getProperty(this.STORAGE_KEY);
+    const json = properties.getProperty(this.getStorageKey());
 
     if (!json) {
       return {};
@@ -74,7 +76,7 @@ class ProcessedFilesRepository {
    * Borra todos los registros.
    */
   static clear() {
-    PropertiesService.getScriptProperties().deleteProperty(this.STORAGE_KEY);
+    PropertiesService.getScriptProperties().deleteProperty(this.getStorageKey());
   }
 
   /**
@@ -94,6 +96,9 @@ class ProcessedFilesRepository {
    * @param {Object} records
    */
   static persist(records) {
-    PropertiesService.getScriptProperties().setProperty(this.STORAGE_KEY, JSON.stringify(records));
+    PropertiesService.getScriptProperties().setProperty(
+      this.getStorageKey(),
+      JSON.stringify(records)
+    );
   }
 }
