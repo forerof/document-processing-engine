@@ -39,11 +39,21 @@ class ElectronicIndexService {
       });
   }
 
-  static processPendingFiles(folderId) {
+  /**
+   * Procesa los documentos pendientes.
+   *
+   * @param {string} folderId
+   * @param {string} spreadsheetId
+   */
+  static processPendingFiles(folderId, spreadsheetId) {
+    GoogleSheetsService.initialize(spreadsheetId);
+
     const pendingFiles = this.getPendingFiles(folderId);
 
     pendingFiles.forEach(function (pdf) {
-      ProcessedFilesRepository.hydrate(pdf);
+      // =====================================================
+      // Etapa 1 · Cloud Run
+      // =====================================================
 
       if (pdf.pages === null) {
         pdf.pdfProcessingStatus = ProcessingStatus.PROCESSING;
@@ -62,6 +72,42 @@ class ElectronicIndexService {
           pdf.pdfProcessingError = error.message;
         }
 
+        /*
+         * Persistir inmediatamente el estado luego
+         * del procesamiento en Cloud Run.
+         */
+        ProcessedFilesRepository.save(ProcessedFilesRepository.fromPdfFile(pdf));
+      }
+
+      // =====================================================
+      // Etapa 2 · Google Sheets
+      // =====================================================
+
+      if (
+        pdf.pages !== null &&
+        pdf.sheetRow === null &&
+        pdf.sheetSyncStatus !== SheetSyncStatus.SUCCESS
+      ) {
+        pdf.sheetSyncStatus = SheetSyncStatus.PROCESSING;
+
+        try {
+          const sheetRow = GoogleSheetsService.append(spreadsheetId, pdf);
+
+          pdf.sheetRow = sheetRow;
+
+          pdf.sheetSyncStatus = SheetSyncStatus.SUCCESS;
+
+          pdf.sheetSyncError = null;
+        } catch (error) {
+          pdf.sheetSyncStatus = SheetSyncStatus.FAILED;
+
+          pdf.sheetSyncError = error.message;
+        }
+
+        /*
+         * Persistir inmediatamente el resultado
+         * de la sincronización con Google Sheets.
+         */
         ProcessedFilesRepository.save(ProcessedFilesRepository.fromPdfFile(pdf));
       }
     });

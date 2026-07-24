@@ -119,6 +119,8 @@ class ProcessedFilesRepository {
 
     record.sheetSyncStatus = pdf.sheetSyncStatus;
 
+    record.sheetRow = pdf.sheetRow;
+
     return record;
   }
 
@@ -142,6 +144,8 @@ class ProcessedFilesRepository {
     pdf.pdfProcessingError = record.pdfProcessingError;
 
     pdf.sheetSyncStatus = record.sheetSyncStatus;
+
+    pdf.sheetRow = record.sheetRow;
 
     return pdf;
   }

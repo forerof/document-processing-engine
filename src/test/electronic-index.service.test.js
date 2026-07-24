@@ -43,7 +43,7 @@ function testElectronicIndexService_ProcessPendingFiles() {
   Logger.log("Procesando documentos...");
   Logger.log("=======================================");
 
-  ElectronicIndexService.processPendingFiles(TEST_CONFIG.FOLDER_ID);
+  ElectronicIndexService.processPendingFiles(TEST_CONFIG.FOLDER_ID, TEST_CONFIG.SPREADSHEET_ID);
 
   Logger.log("=======================================");
   Logger.log("Proceso finalizado.");

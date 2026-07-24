@@ -33,7 +33,7 @@ class GoogleSheetsService {
    * @returns {Array<*>}
    */
   static toRow(pdf) {
-    return [pdf.name, pdf.createdTime, pdf.pages, pdf.sizeKb, pdf.owner, pdf.url];
+    return [pdf.name, pdf.incorporatedAt, pdf.pages, pdf.sizeKb, pdf.ownerEmail, pdf.url];
   }
 
   /**

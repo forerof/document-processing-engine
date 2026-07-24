@@ -11,18 +11,22 @@ class CloudRunClient {
   }
 
   /**
-   * Envía un PDF a Cloud Run y devuelve su información.
+   * Envía un documento PDF a Cloud Run y devuelve
+   * la información extraída.
    *
-   * @param {GoogleAppsScript.Base.Blob} pdfBlob
+   * @param {PdfFile} pdf
    * @returns {{pages:number}}
    */
-
-  static getPdfInfo(pdfBlob) {
-    if (!pdfBlob) {
-      throw new Error("INVALID_ARGUMENT: pdfBlob is required.");
+  static getPdfInfo(pdf) {
+    if (!pdf) {
+      throw new Error("INVALID_ARGUMENT: pdf is required.");
     }
 
-    const response = this.post(this.getPdfInfoEndpoint(), pdfBlob.getBytes(), "application/pdf");
+    const response = this.post(
+      this.getPdfInfoEndpoint(),
+      pdf.getBlob().getBytes(),
+      "application/pdf"
+    );
 
     return response.data;
   }
