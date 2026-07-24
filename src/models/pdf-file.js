@@ -38,4 +38,27 @@ class PdfFile {
     // Estado de sincronización con Google Sheets.
     this.sheetSyncStatus = SheetSyncStatus.PENDING;
   }
+
+  /**
+   * Crea un PdfFile manualmente.
+   *
+   * Muy útil para pruebas.
+   */
+  static create(data) {
+    const pdf = Object.create(PdfFile.prototype);
+
+    pdf.id = data.id ?? null;
+    pdf.name = data.name ?? null;
+    pdf.createdTime = data.createdTime ?? null;
+    pdf.pages = data.pages ?? null;
+    pdf.sizeKb = data.sizeKb ?? null;
+    pdf.owner = data.owner ?? null;
+    pdf.url = data.url ?? null;
+
+    pdf.pdfProcessingStatus = data.pdfProcessingStatus ?? null;
+    pdf.pdfProcessingError = data.pdfProcessingError ?? null;
+    pdf.sheetSyncStatus = data.sheetSyncStatus ?? null;
+
+    return pdf;
+  }
 }

@@ -14,11 +14,6 @@
  */
 
 /**
- * Reemplazar por un PDF pequeño de prueba.
- */
-const TEST_FILE_ID = "REEMPLAZAR_FILE_ID";
-
-/**
  * Caso exitoso.
  *
  * Esperado:
@@ -29,7 +24,7 @@ const TEST_FILE_ID = "REEMPLAZAR_FILE_ID";
 function testCloudRunClient() {
   validateConfiguration();
 
-  const blob = DriveApp.getFileById(TEST_FILE_ID).getBlob();
+  const blob = DriveApp.getFileById(TEST_CONFIG.FILE_ID).getBlob();
 
   const result = CloudRunClient.getPdfInfo(blob);
 
@@ -48,7 +43,7 @@ function testCloudRunClient_InvalidApiKey() {
   CONFIG.CLOUD_RUN.API_KEY = "INVALID_KEY";
 
   try {
-    const blob = DriveApp.getFileById(TEST_FILE_ID).getBlob();
+    const blob = DriveApp.getFileById(TEST_CONFIG.FILE_ID).getBlob();
 
     CloudRunClient.getPdfInfo(blob);
   } catch (error) {

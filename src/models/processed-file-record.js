@@ -17,5 +17,7 @@ class ProcessedFileRecord {
     this.lastUpdatedAt = null;
 
     this.pages = null;
+
+    this.sheetRow = null;
   }
 }

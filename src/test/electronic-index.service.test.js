@@ -5,15 +5,10 @@
  */
 
 /**
- * Carpeta de pruebas.
- */
-const TEST_FOLDER_ID = "REEMPLAZAR_FOLDER_ID";
-
-/**
  * Lista únicamente los documentos pendientes.
  */
 function testElectronicIndexService_GetPendingFiles() {
-  const pendingFiles = ElectronicIndexService.getPendingFiles(TEST_FOLDER_ID);
+  const pendingFiles = ElectronicIndexService.getPendingFiles(TEST_CONFIG.FOLDER_ID);
 
   Logger.log("=======================================");
   Logger.log("Pendientes: %s", pendingFiles.length);
@@ -48,7 +43,7 @@ function testElectronicIndexService_ProcessPendingFiles() {
   Logger.log("Procesando documentos...");
   Logger.log("=======================================");
 
-  ElectronicIndexService.processPendingFiles(TEST_FOLDER_ID);
+  ElectronicIndexService.processPendingFiles(TEST_CONFIG.FOLDER_ID);
 
   Logger.log("=======================================");
   Logger.log("Proceso finalizado.");
