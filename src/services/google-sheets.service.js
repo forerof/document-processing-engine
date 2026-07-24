@@ -52,4 +52,66 @@ class GoogleSheetsService {
 
     return sheet.getLastRow();
   }
+
+  /**
+   * Obtiene el encabezado oficial.
+   *
+   * @returns {string[]}
+   */
+  static getHeaders() {
+    return SheetSchema.HEADERS.slice();
+  }
+
+  /**
+   * Verifica si la hoja contiene el encabezado esperado.
+   *
+   * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet
+   * @returns {boolean}
+   */
+  static hasHeaders(sheet) {
+    const expectedHeaders = this.getHeaders();
+
+    const lastColumn = expectedHeaders.length;
+
+    const currentHeaders = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
+
+    if (currentHeaders.length !== expectedHeaders.length) {
+      return false;
+    }
+
+    return expectedHeaders.every(function (header, index) {
+      return currentHeaders[index] === header;
+    });
+  }
+
+  /**
+   * Inicializa la hoja con el encabezado oficial.
+   *
+   * Si la hoja está vacía, escribe el encabezado.
+   * Si ya existe el encabezado correcto, no realiza cambios.
+   * Si existe un encabezado diferente, lanza una excepción.
+   *
+   * @param {string} spreadsheetId
+   */
+  static initialize(spreadsheetId) {
+    const sheet = this.getSheet(spreadsheetId);
+
+    const headers = this.getHeaders();
+
+    // Hoja completamente vacía.
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(headers);
+      return;
+    }
+
+    // Encabezado correcto.
+    if (this.hasHeaders(sheet)) {
+      return;
+    }
+
+    // Existe contenido, pero el encabezado no coincide.
+    throw new Error(
+      "INVALID_SHEET_SCHEMA: The spreadsheet headers do not match the expected schema."
+    );
+  }
 }
