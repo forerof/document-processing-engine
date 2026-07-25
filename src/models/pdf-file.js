@@ -28,7 +28,7 @@ class PdfFile {
     this.incorporatedAt = file.getDateCreated();
 
     // Tamaño expresado en kB.
-    this.sizeKb = Math.ceil(file.getSize() / 1024);
+    this.sizeKb = Math.round(file.getSize() / 1024);
 
     // Puede devolver null dependiendo de los permisos.
     const owner = file.getOwner();
